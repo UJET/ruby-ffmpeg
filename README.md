@@ -1,16 +1,21 @@
-Streamio FFMPEG
-===============
+FFMPEG
+======
 
-Simple yet powerful wrapper around the ffmpeg command for reading metadata and transcoding movies.
+Original repo from [streamio-ffmpeg](https://github.com/streamio/streamio-ffmpeg). Thanks to the Streamio guys!
 
-All work on this project is sponsored by the online video platform [Streamio](http://streamio.com).
+This is going to be heavily modified for additional usecases over the next 3 weeks. Come back for more then.
 
-[![Streamio](http://d253c4ja9jigvu.cloudfront.net/assets/small-logo.png)](http://streamio.com)
+1. Input options - Now only 2 available. More coming soon
+2. FFMPEG Simple Filters Support. Coming Soon
+3. Multiple Output support. Coming Soon
+4. Support for various external libraries. Coming Soon
+
+
 
 Installation
 ------------
 
-    (sudo) gem install streamio-ffmpeg
+    (sudo) gem install ffmpeg. Not available on rubygems.org yet!
 
 Compatibility
 -------------
@@ -18,12 +23,10 @@ Compatibility
 ### Ruby
 
 Only guaranteed to work with MRI Ruby 1.9.3 or later.
-Should work with rubinius head in 1.9 mode.
-Will not work in jruby until they fix: http://goo.gl/Z4UcX (should work in the upcoming 1.7.2)
 
 ### ffmpeg
 
-The current gem is tested against ffmpeg 0.11.1. So no guarantees with earlier (or much later) versions. Output and input standards have inconveniently changed rather a lot between versions of ffmpeg. My goal is to keep this library in sync with new versions of ffmpeg as they come along.
+Tested against latest head on ffmpeg currently. Will resort to better versioning soon.
 
 Usage
 -----
@@ -32,7 +35,7 @@ Usage
 
 ``` ruby
 require 'rubygems'
-require 'streamio-ffmpeg'
+require 'ffmpeg'
 ```
 
 ### Reading Metadata
@@ -150,7 +153,7 @@ movie.screenshot("screenshot.png", { seek_time: 2, resolution: '200x120' }, pres
 Specify the path to ffmpeg
 --------------------------
 
-By default, streamio assumes that the ffmpeg binary is available in the execution path and named ffmpeg and so will run commands that look something like "ffmpeg -i /path/to/input.file ...". Use the FFMPEG.ffmpeg_binary setter to specify the full path to the binary if necessary:
+By default, gem assumes that the ffmpeg binary is available in the execution path and named ffmpeg and so will run commands that look something like "ffmpeg -i /path/to/input.file ...". Use the FFMPEG.ffmpeg_binary setter to specify the full path to the binary if necessary:
 
 ``` ruby
 FFMPEG.ffmpeg_binary = '/usr/local/bin/ffmpeg'
@@ -162,7 +165,7 @@ This will cause the same command to run as "/usr/local/bin/ffmpeg -i /path/to/in
 Automatically kill hung processes
 ---------------------------------
 
-By default, streamio will wait for 30 seconds between IO feedback from the FFMPEG process. After which an error is logged and the process killed.
+By default, gem will wait for 30 seconds between IO feedback from the FFMPEG process. After which an error is logged and the process killed.
 It is possible to modify this behaviour by setting a new default:
 
 ``` ruby
@@ -176,5 +179,4 @@ Transcoder.timeout = false
 
 Copyright
 ---------
-
-Copyright (c) 2011 Streamio AB. See LICENSE for details.
+Original license from Streamio. See LICENSE for details.

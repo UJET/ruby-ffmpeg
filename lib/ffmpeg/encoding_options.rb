@@ -1,4 +1,22 @@
 module FFMPEG
+  class InputOptions < Hash
+    def initialize(options = {})
+        merge!(options)
+    end
+    def to_s
+        params = collect do |key, value|
+          send("convert_#{key}", value) if value && supports_option?(key)
+        end
+        params_string = params.join(" ")
+    end
+    def convert_analyzeduration value
+       "-analyzeduration #{value}" 
+    end 
+    def convert_analyzesize value
+        "-probesize #{value}"
+    end
+  end
+
   class EncodingOptions < Hash
     def initialize(options = {})
       merge!(options)
