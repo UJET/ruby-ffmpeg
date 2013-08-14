@@ -1,4 +1,12 @@
-== HEAD
+==  HEAD
+
+Improvments:
+* Added input options for seek, loop
+* Added simple video and audio filter support
+* Default audio and video codec are now none. Can disable either one by giving none as a codec.
+
+
+== streamio-ffmpeg HEAD from which fork was made
 
 Improvements:
 * Simpler implementation for timeouts.

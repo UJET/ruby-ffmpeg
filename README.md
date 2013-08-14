@@ -3,12 +3,12 @@ FFMPEG
 
 Original repo from [streamio-ffmpeg](https://github.com/streamio/streamio-ffmpeg). Thanks to the Streamio guys!
 
-This is going to be heavily modified for additional usecases over the next 3 weeks. Come back for more then.
+This is going to be heavily modified for additional usecases over the next few weeks. Come back for more then.
 
-1. Input options - Now only 2 available. More coming soon
-2. FFMPEG Simple Filters Support. Coming Soon
-3. Multiple Output support. Coming Soon
-4. Support for various external libraries. Coming Soon
+1. Input options: Seek and loop support added. - More coming soon
+2. FFMPEG Simple Filters Support - Basic crop, scale, pad, select, denoise, deinterlace added. - More coming soon
+3. Multiple Output support. Coming Soon.
+4. Support for various external libraries. Coming Soon.
 
 
 
