@@ -5,11 +5,11 @@ $:.unshift lib unless $:.include?(lib)
 require "ffmpeg/version"
 
 Gem::Specification.new do |s|
-  s.name        = "streamio-ffmpeg"
+  s.name        = "ruby-ffmpeg"
   s.version     = FFMPEG::VERSION
-  s.authors     = ["David Backeus"]
-  s.email       = ["david@streamio.com"]
-  s.homepage    = "http://github.com/streamio/streamio-ffmpeg"
+  s.authors     = ["David Backeus", "Omkiran Sharma"]
+  s.email       = ["david@streamio.com", "mail.av501@gmail.com"]
+  s.homepage    = "http://github.com/av501/ffmpeg"
   s.summary     = "Wraps ffmpeg to read metadata and transcodes videos."
   
   s.add_development_dependency("rspec", "~> 2.7")
