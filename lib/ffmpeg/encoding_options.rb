@@ -15,11 +15,19 @@ module FFMPEG
     def convert_analyzesize value
         "-probesize #{value}"
     end
+    def convert_loop(value)
+        "-loop 1 -t #{value}"
+    end
+    def convert_seek_time(value)
+        "-ss #{value}"
+    end
   end
 
   class EncodingOptions < Hash
     def initialize(options = {})
       merge!(options)
+      @acodec = "none"
+      @vcodec = "none"
     end
 
     def to_s
@@ -31,9 +39,17 @@ module FFMPEG
       # all other parameters go after so that we can override whatever is in the preset
       codecs = params.select { |p| p =~ /codec/ }
       presets = params.select { |p| p =~ /\-.pre/ }
-      other = params - codecs - presets
-      params = codecs + presets + other
-
+      video_filters = params.select{ |p| (p=~/-vf /) }
+      audio_filters = params.select{ |p| (p=~/-af /) }
+      acodec = params.select { |p| (p =~ /acodec/ or p == "-an") }
+      vcodec = params.select { |p| (p =~ /vcodec/ or p == "-vn") }      
+      other = params - acodec - vcodec - audio_params - video_params - presets - audio_filters - video_filters
+      params = other
+      params = params + acodec
+      audio_filter_string = ["-af #{( audio_filters.collect{ |af| af.split(' ').last }).join(',')}"] if !audio_filters.empty?
+      params = params + audio_filter_string + audio_params if @acodec != "none"
+      video_filters_string = ["-vf #{( video_filters.collect do |vf| vf.split(' ').last  end).join(',')}"]
+      params = params + video_filters_string + video_params if @vcodec != "none"
       params_string = params.join(" ")
       params_string << " #{convert_aspect(calculate_aspect)}" if calculate_aspect?
       params_string
@@ -67,7 +83,12 @@ module FFMPEG
     end
 
     def convert_video_codec(value)
-      "-vcodec #{value}"
+      @vcodec = value
+      if @vcodec == "none"
+          "-vn"
+      else
+          "-vcodec #{value}"
+      end
     end
 
     def convert_frame_rate(value)
@@ -83,7 +104,12 @@ module FFMPEG
     end
 
     def convert_audio_codec(value)
-      "-acodec #{value}"
+       @acodec = value
+       if @acodec == "none"
+            "-an"
+       else
+            "-acodec #{value}"
+       end
     end
 
     def convert_audio_bitrate(value)
@@ -153,5 +179,49 @@ module FFMPEG
     def k_format(value)
       value.to_s.include?("k") ? value : "#{value}k"
     end
-  end
+
+    ########## x264 specific values ###########
+    def convert_aq_mode value
+        "-aq-mode:v #{value}"
+    end
+
+    def convert_aq_strength value
+        "-aq-strength:v #{value}"
+    end
+
+    ######### Simple filter support
+    def convert_audio_filter_gain value
+        "-af volume=#{value}"
+    end
+
+    def convert_video_filter_denoise value
+        "-vf hqdn3d" + ( value ? "=#{value}" : "" )
+    end
+    def convert_video_filter_select value
+        "-vf select=#{value}"
+    end
+
+    def convert_video_filter_deinterlace value
+        "-vf yadif" + ( value ? "=#{value}" : "" )
+    end
+
+    def convert_video_filter_crop value
+        "-vf crop=#{value}"
+    end
+
+    def convert_video_filter_drawtext value
+        "-vf drawtext=#{value}"
+    end
+
+    def convert_video_filter_pad value
+        "-vf pad=#{value}"
+    end
+
+    def convert_video_filter_scale value
+        "-vf scale=#{value}"
+    end
+
+    def convert_video_filter_tile value
+        "-vf tile=#{value}"
+    end
 end
