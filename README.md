@@ -1,28 +1,33 @@
-FFMPEG
-======
+RUBY-FFMPEG
+===========
 
 Original repo from [streamio-ffmpeg](https://github.com/streamio/streamio-ffmpeg). Thanks to the Streamio guys!
 
-This is going to be heavily modified for additional usecases over the next few weeks. Come back for more then.
+It is heavily modified with support for new use cases not covered in the original gem. This is a work in progress. If you need something
+urgently, file a request. I should be able to add it off fast.
 
-1. Input options: Seek and loop support added. - More coming soon
-2. FFMPEG Simple Filters Support - Basic crop, scale, pad, select, denoise, deinterlace added. - More coming soon
+
+Major changes
+1. Input options. Seek and loop support added. - More coming soon
+2. FFMPEG Simple Filters Support. Basic crop, scale, pad, select, denoise, deinterlace added. - More coming soon
 3. Multiple Output support. Coming Soon.
 4. Support for various external libraries. Coming Soon.
 
 
-
 Installation
 ------------
-
-    (sudo) gem install ffmpeg. Not available on rubygems.org yet!
+    git clone http://github.com/omkiran/ruby-ffmpeg
+    cd ruby-ffmpeg
+    gem build ruby-ffmpeg.gemspec
+    (sudo) gem install ruby-ffmpeg.0.1.0.gem 
+    Not available on rubygems.org yet. Will add it soon.
 
 Compatibility
 -------------
 
 ### Ruby
 
-Only guaranteed to work with MRI Ruby 1.9.3 or later.
+Only guaranteed to work with MRI Ruby 1.9.3 or later. 
 
 ### ffmpeg
 
@@ -30,12 +35,13 @@ Tested against latest head on ffmpeg currently. Will resort to better versioning
 
 Usage
 -----
+ If you have used streamio-ffmpeg it is similar, but there are changes. Read below.
+
 
 ### Require the gem
 
 ``` ruby
-require 'rubygems'
-require 'ffmpeg'
+require 'ruby-ffmpeg'
 ```
 
 ### Reading Metadata
@@ -77,22 +83,24 @@ Keep track of progress with an optional block.
 movie.transcode("movie.mp4") { |progress| puts progress } # 0.2 ... 0.5 ... 1.0
 ```
 
-Give custom command line options with a string.
-
-``` ruby
-movie.transcode("movie.mp4", "-ac aac -vc libx264 -ac 2 ...")
-```
-
 Use the EncodingOptions parser for humanly readable transcoding options. Below you'll find most of the supported options. Note that the :custom key will be used as is without modification so use it for any tricky business you might need.
 
 ``` ruby
-options = {video_codec: "libx264", frame_rate: 10, resolution: "320x240", video_bitrate: 300, video_bitrate_tolerance: 100,
+encoding_options = {video_codec: "libx264", frame_rate: 10, resolution: "320x240", video_bitrate: 300, video_bitrate_tolerance: 100,
            aspect: 1.333333, keyframe_interval: 90,
            audio_codec: "libfaac", audio_bitrate: 32, audio_sample_rate: 22050, audio_channels: 1,
            threads: 2,
            custom: "-vf crop=60:60:10:10"}
-movie.transcode("movie.mp4", options)
+movie.transcode("movie.mp4", encoding_options)
 ```
+
+This is where we have the first difference with streamio. Support for input options. 
+1. loop
+2. Seek
+
+
+
+
 
 The transcode function returns a Movie object for the encoded file.
 
@@ -180,3 +188,7 @@ Transcoder.timeout = false
 Copyright
 ---------
 Original license from Streamio. See LICENSE for details.
+
+Thank You
+---------
+Streamio for the original gem.

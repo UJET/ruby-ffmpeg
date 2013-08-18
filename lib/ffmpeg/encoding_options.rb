@@ -1,27 +1,4 @@
 module FFMPEG
-  class InputOptions < Hash
-    def initialize(options = {})
-        merge!(options)
-    end
-    def to_s
-        params = collect do |key, value|
-          send("convert_#{key}", value) if value && supports_option?(key)
-        end
-        params_string = params.join(" ")
-    end
-    def convert_analyzeduration value
-       "-analyzeduration #{value}" 
-    end 
-    def convert_analyzesize value
-        "-probesize #{value}"
-    end
-    def convert_loop(value)
-        "-loop 1 -t #{value}"
-    end
-    def convert_seek_time(value)
-        "-ss #{value}"
-    end
-  end
 
   class EncodingOptions < Hash
     def initialize(options = {})
@@ -46,7 +23,7 @@ module FFMPEG
       other = params - acodec - vcodec - audio_params - video_params - presets - audio_filters - video_filters
       params = other
       params = params + acodec
-      audio_filter_string = ["-af #{( audio_filters.collect{ |af| af.split(' ').last }).join(',')}"] if !audio_filters.empty?
+      audio_filter_string  = ["-af #{( audio_filters.collect{ |af| af.split(' ').last }).join(',')}"] if !audio_filters.empty?
       params = params + audio_filter_string + audio_params if @acodec != "none"
       video_filters_string = ["-vf #{( video_filters.collect do |vf| vf.split(' ').last  end).join(',')}"]
       params = params + video_filters_string + video_params if @vcodec != "none"
@@ -189,7 +166,7 @@ module FFMPEG
         "-aq-strength:v #{value}"
     end
 
-    ######### Simple filter support
+    ######### Simple filter support Can add more filters to this
     def convert_audio_filter_gain value
         "-af volume=#{value}"
     end
