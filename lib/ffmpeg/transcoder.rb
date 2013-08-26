@@ -13,28 +13,46 @@ module FFMPEG
       @@timeout
     end
 
-    def initialize(movie, output_file, options = EncodingOptions.new, input_options={})
+    def initialize(movie, output_file, options=nil,   input_options={})
       @movie            = movie
-      @output_file      = output_file
-      @encoding_options = get_options(EncodingOptions, options)
-      @input_options    = get_options(InputOptions,    input_options)
-      @errors = []
+      @output_file      = Array(output_file)
+      @encoding_options,num_options = get_options(EncodingOptions, options, @output_file)
+      @input_options    = InputOptions.new(input_options)
+      @encoded = []
+      @errors  = []
+      raise ArgumentError, "Number of outputs and options don't match (#{@output_file.size} vs #{num_options})" if num_options != @output_file.size
     end
 
-    def get_options(options_class, options)
-      if options.is_a?(String) || options.is_a?(options_class)
-        ret_options = options
-      elsif options.is_a?(Hash)
-        ret_options = options_class.new(options)
+    def get_options(options_class, options, output_file)
+      ret_options = ""
+      num_options = @output_file.size
+      temp_output_file = output_file.dup
+      if !options.nil?
+          if options.is_a?(String) || options.is_a?(options_class)
+            ret_options = options.to_s + " " + Shellwords.escape(temp_output_file.shift)
+            num_options = 1
+          elsif options.is_a?(Hash)
+            ret_options = options_class.new(options).to_s + " " + Shellwords.escape(temp_output_file.shift)
+            num_options = 1
+          elsif options.is_a?(Array)
+           ret_options = options.collect{ |o| " " + options_class.new( o ).to_s + " " + Shellwords.escape(temp_output_file.shift) + " " }.join(" ")
+           num_options = options.size
+          else
+            raise ArgumentError, "Unknown options format '#{options.class}', should be either InputOptions/EncodingOptions, Hash or String."
+          end
       else
-        raise ArgumentError, "Unknown options format '#{options.class}', should be either EncodingOptions, Hash or String."
+        # I need to put in codecs here so that the defaults get chosen.
+        ret_options = @output_file.collect{ |i| " " + options_class.new( {"audio_codec" => FFMPEG.codec_options.default_audio, "video_codec" => FFMPEG.codec_options.default_video} ).to_s + " " + Shellwords.escape(temp_output_file.shift)  + " " }
+        puts "RET OPTIONS NOW #{ret_options}"
+        ret_options = ret_options.join(" ")
       end
-      ret_options
+      puts "RET OPTIONS IS #{ret_options}"
+      return [ret_options,num_options]
     end
     # frame= 4855 fps= 46 q=31.0 size=   45306kB time=00:02:42.28 bitrate=2287.0kbits/
-
     def run
-      command = "#{FFMPEG.ffmpeg_binary} -y #{@input_options} -i #{Shellwords.escape(@movie.path)} #{@encoding_options} #{Shellwords.escape(@output_file)}"
+      command = "#{FFMPEG.ffmpeg_binary} -y #{@input_options} -i #{Shellwords.escape(@movie.path)} #{@encoding_options}"
+      puts "Command is #{command}"
       FFMPEG.logger.info("Running transcoding...\n#{command}\n")
       output = ""
       Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
@@ -78,13 +96,16 @@ module FFMPEG
     end
 
     def encoding_succeeded?
-      @errors << "no output file created" and return false unless File.exists?(@output_file)
+      @errors << "no output file created" and return false if (@output_file.select{ | output_file | File.exists?(output_file) } ).empty?
+      @output_file.each do | output_file |
+          @encoded << Movie.new(output_file)
+      end 
       @errors << "encoded file is invalid" and return false unless encoded.valid?
       true
     end
 
     def encoded
-      @encoded ||= Movie.new(@output_file)
+      FFMPEG::EncodedMovies.new(@encoded)
     end
 
     private

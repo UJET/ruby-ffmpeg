@@ -1,6 +1,21 @@
 require 'time'
 
 module FFMPEG
+
+  class EncodedMovies
+    def initialize( movies )
+        @movies = movies
+    end
+    def valid?
+        @movies.each do | movie |
+            return false unless movie.valid?
+        end
+    end
+    def method_missing( method, *args, &block )
+        @movies.first.send( method )
+    end
+  end
+
   class Movie
     attr_reader :path, :duration, :time, :bitrate, :rotation, :creation_time
     attr_reader :video_stream, :video_codec, :video_bitrate, :colorspace, :resolution, :dar
@@ -56,8 +71,12 @@ module FFMPEG
       end
 
       @invalid = true if @video_stream.to_s.empty? && @audio_stream.to_s.empty?
+      puts "AV EMPTY!!!!!!!!" if @invalid
       @invalid = true if output.include?("is not supported")
+      puts "OUTPUT INCLUDES NOT SUPPORTED #{output}" if output.include?("is not supported")
+      puts "NOTSUPPORTED" if @invalid
       @invalid = true if output.include?("could not find codec parameters")
+      puts "COULD NOT FIND CODEC PARAMETER" if @invalid
     end
 
     def valid?
@@ -93,7 +112,7 @@ module FFMPEG
       video_stream[/(\d*\.?\d*)\s?fps/] ? $1.to_f : nil
     end
 
-    def transcode(output_file, options = EncodingOptions.new, transcoder_options = {}, &block)
+    def transcode(output_file, options = nil, transcoder_options = {}, &block)
       Transcoder.new(self, output_file, options, transcoder_options).run &block
     end
 

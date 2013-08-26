@@ -7,7 +7,7 @@ require "ffmpeg/version"
 Gem::Specification.new do |s|
   s.name        = "ruby-ffmpeg"
   s.version     = FFMPEG::VERSION
-  s.authors     = ["David Backeus", "Omkiran Sharma"]
+  s.authors     = ["David Backeus (Original-Streamio-ffmpeg)", "Omkiran Sharma (ruby-ffmpeg)"]
   s.email       = ["david@streamio.com", "mail.av501@gmail.com"]
   s.homepage    = "http://github.com/av501/ffmpeg"
   s.summary     = "Wraps ffmpeg to read metadata and transcodes videos."

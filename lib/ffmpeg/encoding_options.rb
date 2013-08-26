@@ -1,10 +1,11 @@
 module FFMPEG
 
   class EncodingOptions < Hash
+
     def initialize(options = {})
       merge!(options)
-      @acodec = "none"
-      @vcodec = "none"
+      @acodec = FFMPEG.codec_options.default_audio
+      @vcodec = FFMPEG.codec_options.default_video
     end
 
     def to_s
@@ -14,19 +15,22 @@ module FFMPEG
 
       # codecs should go before the presets so that the files will be matched successfully
       # all other parameters go after so that we can override whatever is in the preset
-      codecs = params.select { |p| p =~ /codec/ }
-      presets = params.select { |p| p =~ /\-.pre/ }
-      video_filters = params.select{ |p| (p=~/-vf /) }
-      audio_filters = params.select{ |p| (p=~/-af /) }
-      acodec = params.select { |p| (p =~ /acodec/ or p == "-an") }
-      vcodec = params.select { |p| (p =~ /vcodec/ or p == "-vn") }      
-      other = params - acodec - vcodec - audio_params - video_params - presets - audio_filters - video_filters
-      params = other
-      params = params + acodec
-      audio_filter_string  = ["-af #{( audio_filters.collect{ |af| af.split(' ').last }).join(',')}"] if !audio_filters.empty?
-      params = params + audio_filter_string + audio_params if @acodec != "none"
-      video_filters_string = ["-vf #{( video_filters.collect do |vf| vf.split(' ').last  end).join(',')}"]
-      params = params + video_filters_string + video_params if @vcodec != "none"
+      codecs        = params.select { |p| p =~ /codec/ }
+      presets       = params.select { |p| p =~ /\-.pre/ }
+      video_filters = params.select { |p| (p=~/-vf /) }
+      audio_filters = params.select { |p| (p=~/-af /) }
+      acodec        = params.select { |p| (p =~ /acodec/ or p == "-an") }
+      vcodec        = params.select { |p| (p =~ /vcodec/ or p == "-vn") }      
+      audio_params  = params.select{ |p| (p=~/:a/ or p=~/-ac / or p=~/-ar/ ) } 
+      video_params  = params.select{ |p| (p=~/:v/ or p=~/-g/ or p=~/-keyint_min/) } 
+      other         = params - acodec - vcodec - audio_params - video_params - presets - audio_filters - video_filters
+      params        = other
+      params        = params + acodec
+      audio_filter_string  = audio_filters.empty? ? [] : ["-af #{( audio_filters.collect{ |af| af.split(' ').last }).join(',')}"] 
+      params        = params + audio_filter_string + audio_params if @acodec != "none"
+      video_filters_string = video_filters.empty? ? [] : ["-vf #{( video_filters.collect do |vf| vf.split(' ').last  end).join(',')}"]
+      params        = params + vcodec
+      params        = params + presets + video_filters_string + video_params if @vcodec != "none"
       params_string = params.join(" ")
       params_string << " #{convert_aspect(calculate_aspect)}" if calculate_aspect?
       params_string
@@ -64,7 +68,7 @@ module FFMPEG
       if @vcodec == "none"
           "-vn"
       else
-          "-vcodec #{value}"
+          " -vcodec #{value} "
       end
     end
 
@@ -85,7 +89,10 @@ module FFMPEG
        if @acodec == "none"
             "-an"
        else
-            "-acodec #{value}"
+            # Now here we choose amongst the aac options
+            value = FFMPEG.codec_options.aac if value == "aac"
+            value = FFMPEG.codec_options.mp3 if value == "mp3"
+            " -acodec #{value} "
        end
     end
 
@@ -201,4 +208,5 @@ module FFMPEG
     def convert_video_filter_tile value
         "-vf tile=#{value}"
     end
+  end
 end

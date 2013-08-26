@@ -10,6 +10,7 @@ require 'ffmpeg/io_monkey'
 require 'ffmpeg/transcoder'
 require 'ffmpeg/encoding_options'
 require 'ffmpeg/input_options'
+require 'ffmpeg/codec_options'
 
 module FFMPEG
   # FFMPEG logs information about its progress when it's transcoding.
@@ -45,5 +46,9 @@ module FFMPEG
   # @return [String] the path to the ffmpeg binary
   def self.ffmpeg_binary
     @ffmpeg_binary || 'ffmpeg'
+  end
+
+  def self.codec_options
+    @codec_options ||= CodecOptions.new
   end
 end
