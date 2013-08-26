@@ -50,7 +50,7 @@ require 'ruby-ffmpeg'
 Set the following if you want them changed.
 ``` ruby
 FFMPEG.codec_options.default_audio # "aac"
-FFMPEG.codec_options.default_video # "mp3"
+FFMPEG.codec_options.default_video # "h264"
 FFMPEG.codec_options.aac = "native" # Inbuilt AAC encoder 
 # Other options for aac are faac and fdk
 FFMPEG.codec_options.mp3 = "native" # Inbuilt mp3 encoder
