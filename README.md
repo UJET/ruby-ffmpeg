@@ -10,8 +10,9 @@ urgently, file a request. I should be able to add it off fast.
 Major changes
 1. Input options. Seek and loop support added. - More coming soon
 2. FFMPEG Simple Filters Support. Basic crop, scale, pad, select, denoise, deinterlace added. - More coming soon
-3. Multiple Output support. Coming Soon.
-4. Support for various external libraries. Coming Soon.
+3. Multiple Output support - Added
+4. Support for setting default audio/video codec
+5. Support for various external libraries. AAC and MP3 now configurable.
 
 
 Installation
@@ -43,6 +44,18 @@ Usage
 ``` ruby
 require 'ruby-ffmpeg'
 ```
+
+### Default parameters
+
+Set the following if you want them changed.
+FFMPEG.codec_options.default_audio # "aac"
+FFMPEG.codec_options.default_video # "mp3"
+FFMPEG.codec_options.aac = "native" # Inbuilt AAC encoder 
+Other options for aac are faac and fdk
+FFMPEG.codec_options.mp3 = "native" # Inbuilt mp3 encoder
+Other option is lame
+
+
 
 ### Reading Metadata
 
@@ -98,9 +111,10 @@ This is where we have the first difference with streamio. Support for input opti
 1. loop
 2. Seek
 
+Loop of 0 gives an infinite loop, you probably don't want that.
+Seek is in milliseconds and allows you to seek to the point before starting the video processing.
 
-
-
+Multiple outputs (Explain here)
 
 The transcode function returns a Movie object for the encoded file.
 
