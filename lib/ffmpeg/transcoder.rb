@@ -43,16 +43,13 @@ module FFMPEG
       else
         # I need to put in codecs here so that the defaults get chosen.
         ret_options = @output_file.collect{ |i| " " + options_class.new( {"audio_codec" => FFMPEG.codec_options.default_audio, "video_codec" => FFMPEG.codec_options.default_video} ).to_s + " " + Shellwords.escape(temp_output_file.shift)  + " " }
-        puts "RET OPTIONS NOW #{ret_options}"
         ret_options = ret_options.join(" ")
       end
-      puts "RET OPTIONS IS #{ret_options}"
-      return [ret_options,num_options]
+      [ret_options, num_options]
     end
     # frame= 4855 fps= 46 q=31.0 size=   45306kB time=00:02:42.28 bitrate=2287.0kbits/
     def run
       command = "#{FFMPEG.ffmpeg_binary} -y #{@input_options} -i #{Shellwords.escape(@movie.path)} #{@encoding_options}"
-      puts "Command is #{command}"
       FFMPEG.logger.info("Running transcoding...\n#{command}\n")
       output = ""
       Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|

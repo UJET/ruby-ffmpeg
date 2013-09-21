@@ -21,8 +21,8 @@ module FFMPEG
       audio_filters = params.select { |p| (p=~/-af /) }
       acodec        = params.select { |p| (p =~ /acodec/ or p == "-an") }
       vcodec        = params.select { |p| (p =~ /vcodec/ or p == "-vn") }      
-      audio_params  = params.select{ |p| (p=~/:a/ or p=~/-ac / or p=~/-ar/ ) } 
-      video_params  = params.select{ |p| (p=~/:v/ or p=~/-g/ or p=~/-keyint_min/) } 
+      audio_params  = params.select { |p| (p=~/:a/ or p=~/-ac / or p=~/-ar/ ) } 
+      video_params  = params.select { |p| (p=~/:v/ or p=~/-g/ or p=~/-keyint_min/) } 
       other         = params - acodec - vcodec - audio_params - video_params - presets - audio_filters - video_filters
       params        = other
       params        = params + acodec
@@ -153,7 +153,7 @@ module FFMPEG
     end
 
     def convert_screenshot(value)
-      value ? "-vframes 1 -f image2" : ""
+      value ? "-vframes 1" : ""
     end
 
     def convert_custom(value)

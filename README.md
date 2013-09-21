@@ -8,11 +8,11 @@ urgently, file a request. I should be able to add it off fast.
 
 
 Major changes
-1. Input options. Seek and loop support added. - More coming soon
-2. FFMPEG Simple Filters Support. Basic crop, scale, pad, select, denoise, deinterlace added. - More coming soon
-3. Multiple Output support - Added
-4. Support for setting default audio/video codec
-5. Support for various external libraries. AAC and MP3 now configurable.
+* Input options. Seek and loop support added. - More coming soon
+* FFMPEG Simple Filters Support. Basic crop, scale, pad, select, denoise, deinterlace added. - More coming soon
+* Multiple Output support - Added
+* Support for setting default audio/video codec
+* Support for various external libraries. AAC and MP3 now configurable.
 
 
 Installation
@@ -116,7 +116,7 @@ This is where we have the first difference with streamio. Support for input opti
 Loop of 0 gives an infinite loop, you probably don't want that.
 Seek is in milliseconds and allows you to seek to the point before starting the video processing.
 
-Multiple outputs (Explain here)
+Multiple outputs (Explain that here)
 
 The transcode function returns a Movie object for the encoded file.
 

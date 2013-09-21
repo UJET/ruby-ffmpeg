@@ -116,6 +116,17 @@ module FFMPEG
       Transcoder.new(self, output_file, options, transcoder_options).run &block
     end
 
+    def thumbnails(timestamps, options={})
+        opts = { :prefix => "", }.merge(options)
+        output_files = []
+        timestamps.each_with_index do | ts, i  |
+            output_file = "#{opts[:prefix]}#{i}_thumb_#{ts}.y4m"
+            output_files << { :file => output_file }
+            screenshot(output_file, opts, :seek_time => ts)
+        end
+        output_files
+    end
+
     def screenshot(output_file, options = EncodingOptions.new, transcoder_options = {}, &block)
       Transcoder.new(self, output_file, options.merge(screenshot: true), transcoder_options).run &block
     end

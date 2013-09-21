@@ -1,0 +1,44 @@
+filter = FFMPEG::Filter.new
+filter
+
+
+movie = FFMPEG::Movie.new( "somefile.mp4" )
+
+movie.bitrate
+movie.audio_bitrate
+movie.video_bitrate
+movie.duration
+movie.size
+movie.profile
+movie.level
+movie.audio_codec
+movie.video_codec
+movie.container
+movie.i_pic_interval
+movie.metadata
+
+
+movie.transcode
+movie.transformat
+movie.snapshot
+movie.thumbnails
+movie.rotate
+movie.splice
+movie.scale
+movie.crop
+movie.add_metadata metadata
+movie.rip
+movie.merge( movie2 ) # 
+movie.concat
+
+movies = Movies.new( [movie1, movie2] )
+
+movies.bitrate
+movies.transcode
+movies.transformat
+movies.snapshot
+movies.thumbnails
+movies.rotate
+movies.splice
+movies.scale
+movies.crop
