@@ -109,7 +109,7 @@ module FFMPEG
       end
 
       it "should specify screenshot parameters" do
-        EncodingOptions.new(screenshot: true).to_s.should == "-vframes 1 -f image2"
+        EncodingOptions.new(screenshot: true).to_s.should == "-vframes 1"
       end
 =begin
       it "should put the parameters in order of codecs, presets, others" do
