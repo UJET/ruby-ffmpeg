@@ -68,7 +68,7 @@ module FFMPEG
       if @vcodec == "none"
           "-vn"
       else
-          " -vcodec #{value} "
+          "-vcodec #{value}"
       end
     end
 
@@ -92,7 +92,7 @@ module FFMPEG
             # Now here we choose amongst the aac options
             value = FFMPEG.codec_options.aac if value == "aac"
             value = FFMPEG.codec_options.mp3 if value == "mp3"
-            " -acodec #{value} "
+            "-acodec #{value}"
        end
     end
 

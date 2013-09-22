@@ -8,10 +8,10 @@ urgently, file a request. I should be able to add it off fast.
 
 
 Major changes
-* Input options. Seek and loop support added. - More coming soon
+* Input options. Seek, loop, analyzeduration, probesize, framerate, format
 * FFMPEG Simple Filters Support. Basic crop, scale, pad, select, denoise, deinterlace added. - More coming soon
-* Multiple Output support - Added
-* Support for setting default audio/video codec
+* Multiple Output support. Transcode multiple outputs in a single call.
+* Support for setting default audio/video codec.
 * Support for various external libraries. AAC and MP3 now configurable.
 
 
@@ -20,7 +20,7 @@ Installation
     git clone http://github.com/omkiran/ruby-ffmpeg
     cd ruby-ffmpeg
     gem build ruby-ffmpeg.gemspec
-    (sudo) gem install ruby-ffmpeg.0.1.0.gem 
+    (sudo) gem install ./ruby-ffmpeg-0.1.0.gem 
     Not available on rubygems.org yet. Will add it soon.
 
 Compatibility
@@ -32,7 +32,7 @@ Only guaranteed to work with MRI Ruby 1.9.3 or later.
 
 ### ffmpeg
 
-Tested against latest head on ffmpeg currently. Will resort to better versioning soon.
+Tested against latest head on ffmpeg.
 
 Usage
 -----
@@ -47,7 +47,7 @@ require 'ruby-ffmpeg'
 
 ### Default parameters
 
-Set the following if you want them changed.
+Set the following if you want them changed. Default values shown here.
 ``` ruby
 FFMPEG.codec_options.default_audio # "aac"
 FFMPEG.codec_options.default_video # "h264"
@@ -57,6 +57,7 @@ FFMPEG.codec_options.mp3 = "native" # Inbuilt mp3 encoder
 # Other option is lame
 ```
 
+The above default_audio/video make it different from streamio gem. There is a transcoding by default. If you want a copy by default set the default to "copy".
 
 
 ### Reading Metadata
@@ -116,7 +117,11 @@ This is where we have the first difference with streamio. Support for input opti
 Loop of 0 gives an infinite loop, you probably don't want that.
 Seek is in milliseconds and allows you to seek to the point before starting the video processing.
 
-Multiple outputs (Explain that here)
+Multiple outputs
+
+encoding_options can be either a single hash of EncodingOption type or an array of the hash type. If it is an array then it implies multiple outputs. There must be same number of output files in the array as EncodingOptions. Each of the encoding options is applied to the corresponding output file.
+
+This allows a single input to be transcoded to multiple outputs in a single call.
 
 The transcode function returns a Movie object for the encoded file.
 
@@ -173,6 +178,17 @@ You can preserve aspect ratio the same way as when using transcode.
 ``` ruby
 movie.screenshot("screenshot.png", { seek_time: 2, resolution: '200x120' }, preserve_aspect_ratio: :width)
 ```
+
+### Taking multiple thumbnails
+
+```ruby
+timestamps = [10,15,23] # Time in seconds
+options={ :prefix => "test"  # Prefix of every file name created
+          :format => "y4m",   # Format of output ( y4m, png, jpg) 
+          :resolution => "320x240"
+        }
+files = movie.thumbnails( timestamps, options )
+files # ["test_thumb_10.y4m", "test_thumb_15.y4m", "test_thumb_23.y4m"]
 
 Specify the path to ffmpeg
 --------------------------

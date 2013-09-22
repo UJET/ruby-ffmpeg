@@ -117,10 +117,12 @@ module FFMPEG
     end
 
     def thumbnails(timestamps, options={})
-        opts = { :prefix => "", }.merge(options)
+        opts = { :prefix => "", :format => "y4m" }.merge(options)
+        format = opts[:format]
+        opts.delete(:format)
         output_files = []
         timestamps.each_with_index do | ts, i  |
-            output_file = "#{opts[:prefix]}#{i}_thumb_#{ts}.y4m"
+            output_file = "#{opts[:prefix]}#{i}_thumb_#{ts}.#{format}"
             output_files << { :file => output_file }
             screenshot(output_file, opts, :seek_time => ts)
         end
