@@ -103,7 +103,7 @@ Use the EncodingOptions parser for humanly readable transcoding options. Below y
 
 ``` ruby
 encoding_options = {video_codec: "libx264", frame_rate: 10, resolution: "320x240", video_bitrate: 300, video_bitrate_tolerance: 100,
-           aspect: 1.333333, keyframe_interval: 90,
+           keyframe_interval: 90,
            audio_codec: "libfaac", audio_bitrate: 32, audio_sample_rate: 22050, audio_channels: 1,
            threads: 2,
            custom: "-vf crop=60:60:10:10"}
@@ -117,15 +117,10 @@ This is where we have the first difference with streamio. Support for input opti
 Loop of 0 gives an infinite loop, you probably don't want that.
 Seek is in milliseconds and allows you to seek to the point before starting the video processing.
 
-Multiple outputs
-----------------
- This mode is supported to allows a single input to be transcoded to multiple outputs in a single call.
- The encoding_options parameter can be either a single hash of EncodingOptions type or an array of the same type. 
-If it is an array then it implies multiple outputs. There must be same number of output files in the array as EncodingOptions. 
-Each of the encoding options is applied to the corresponding output file.  
+
+
 
 The transcode function returns a Movie object for the encoded file.
-
 ``` ruby
 transcoded_movie = movie.transcode("tmp/movie.flv")
 
@@ -133,31 +128,23 @@ transcoded_movie.video_codec # "flv"
 transcoded_movie.audio_codec # "mp3"
 ```
 
-Aspect ratio is added to encoding options automatically if none is specified.
-
-``` ruby
-options = { resolution: "320x180" } # Will add -aspect 1.77777777777778 to ffmpeg
-```
-
-Preserve aspect ratio on width or height by using the preserve_aspect_ratio transcoder option.
-
-``` ruby
-widescreen_movie = FFMPEG::Movie.new("path/to/widescreen_movie.mov")
-
-options = { resolution: "320x240" }
-
-transcoder_options = { preserve_aspect_ratio: :width }
-widescreen_movie.transcode("movie.mp4", options, transcoder_options) # Output resolution will be 320x180
-
-transcoder_options = { preserve_aspect_ratio: :height }
-widescreen_movie.transcode("movie.mp4", options, transcoder_options) # Output resolution will be 426x240
-```
-
 For constant bitrate encoding use video_min_bitrate and video_max_bitrate with buffer_size.
 
 ``` ruby
 options = {video_min_bitrate: 600, video_max_bitrate: 600, buffer_size: 2000}
 movie.transcode("movie.flv", options)
+```
+
+Multiple outputs
+----------------
+ This mode is supported to allows a single input to be transcoded to multiple outputs in a single call.
+ The encoding_options parameter can be either a single hash of EncodingOptions type or an array of the same type. 
+If it is an array then it implies multiple outputs. There must be same number of output files in the array as EncodingOptions. 
+Each of the encoding options is applied to the corresponding output file. Here is an example
+
+```ruby
+options = [ {:audio_codec => "mp3", :video_codec => "h264"}, { :video_codec => "aac", :video_codec => "mpeg4" } ]
+movie.transcode(["movie1.mp4", "movie2.mp4"], options)
 ```
 
 ### Taking Screenshots
@@ -172,12 +159,6 @@ The screenshot method has the very same API as transcode so the same options wil
 
 ``` ruby
 movie.screenshot("screenshot.bmp", seek_time: 5, resolution: '320x240')
-```
-
-You can preserve aspect ratio the same way as when using transcode.
-
-``` ruby
-movie.screenshot("screenshot.png", { seek_time: 2, resolution: '200x120' }, preserve_aspect_ratio: :width)
 ```
 
 ### Taking multiple thumbnails
@@ -217,7 +198,6 @@ Transcoder.timeout = 10
 # Disable the timeout altogether
 Transcoder.timeout = false
 ```
-
 
 Copyright
 ---------
