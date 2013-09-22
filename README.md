@@ -118,10 +118,11 @@ Loop of 0 gives an infinite loop, you probably don't want that.
 Seek is in milliseconds and allows you to seek to the point before starting the video processing.
 
 Multiple outputs
-
-encoding_options can be either a single hash of EncodingOption type or an array of the hash type. If it is an array then it implies multiple outputs. There must be same number of output files in the array as EncodingOptions. Each of the encoding options is applied to the corresponding output file.
-
-This allows a single input to be transcoded to multiple outputs in a single call.
+----------------
+ This mode is supported to allows a single input to be transcoded to multiple outputs in a single call.
+ The encoding_options parameter can be either a single hash of EncodingOptions type or an array of the same type. 
+If it is an array then it implies multiple outputs. There must be same number of output files in the array as EncodingOptions. 
+Each of the encoding options is applied to the corresponding output file.  
 
 The transcode function returns a Movie object for the encoded file.
 
@@ -189,13 +190,14 @@ options={ :prefix => "test"  # Prefix of every file name created
         }
 files = movie.thumbnails( timestamps, options )
 files # ["test_thumb_10.y4m", "test_thumb_15.y4m", "test_thumb_23.y4m"]
+```
 
 Specify the path to ffmpeg
 --------------------------
 
 By default, gem assumes that the ffmpeg binary is available in the execution path and named ffmpeg and so will run commands that look something like "ffmpeg -i /path/to/input.file ...". Use the FFMPEG.ffmpeg_binary setter to specify the full path to the binary if necessary:
 
-``` ruby
+```ruby
 FFMPEG.ffmpeg_binary = '/usr/local/bin/ffmpeg'
 ```
 
